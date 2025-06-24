@@ -14,8 +14,8 @@ function App() {
     <>
       {/* <TodoLists/> */}
      {/* <ProgressBar percent={7}/> */}
-      {/* <CountdownTimer/> */}
-      <StarRating rating={4}/>
+      <CountdownTimer/>
+      {/* <StarRating rating={4}/> */}
     </>
   )
 }

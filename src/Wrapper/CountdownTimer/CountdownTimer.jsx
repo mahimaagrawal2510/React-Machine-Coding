@@ -1,56 +1,47 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export default function CountdownTimer() {
+    
     const hourRef = useRef();
     const minutesRef = useRef();
     const secondsRef = useRef();
-    const timerIdRef = useRef(null);
+    const [totalSeconds, setTotalSeconds] = useState(null)
+    let timerId = useRef(null);
 
-    const createTimer = () => {
-        let hours = parseInt(hourRef?.current?.value) || 0;
-        let minutes = parseInt(minutesRef?.current?.value) || 0;
-        let seconds = parseInt(secondsRef?.current?.value) || 0;
-
-        if (hours === 0 && minutes === 0 && seconds === 0) {
-            clearInterval(timerIdRef.current);
-            return;
-        }
-
-        if (seconds > 0) {
-            seconds--;
-        } else {
-            if (minutes > 0) {
-                minutes--;
-                seconds = 59;
-            } else if (hours > 0) {
-                hours--;
-                minutes = 59;
-                seconds = 59;
-            }
-        }
-
-        hourRef.current.value = String(hours).padStart(2, '0');
-        minutesRef.current.value = String(minutes).padStart(2, '0');
-        secondsRef.current.value = String(seconds).padStart(2, '0');
-    };
+    const calculateTime = (totalNum) => {
+        setTotalSeconds(totalNum)
+        let hours = Math.floor(totalNum/3600);
+        let remaininsSeconds = totalNum%3600;
+        let minutes = Math.floor(remaininsSeconds/60);
+        let seconds = remaininsSeconds%=60;
+        console.log(hours, minutes, seconds, "time");
+        hourRef.current.value = hours;
+        minutesRef.current.value = minutes
+        secondsRef.current.value = seconds
+    }
 
     const startTimer = () => {
-        if (timerIdRef.current) return; // Prevent multiple intervals
-        timerIdRef.current = setInterval(createTimer, 1000);
-    };
+        if(hourRef?.current?.value=="0" && minutesRef?.current?.value == "0" && secondsRef?.current?.value == "0") return;
+        setTotalSeconds(parseInt(hourRef?.current?.value) * 3600 + parseInt(minutesRef?.current?.value) *60 + parseInt(secondsRef?.current?.value))
+        timerId.current = setInterval(()=>{
+            let time = parseInt(hourRef?.current?.value) * 3600 + parseInt(minutesRef?.current?.value) *60 + parseInt(secondsRef?.current?.value) - 1
+            calculateTime(time)
+        }, 1000)
+
+    }
+
+
 
     const pauseTimer = () => {
-        clearInterval(timerIdRef.current);
-        timerIdRef.current = null;
-    };
-
+        clearInterval(timerId.current)
+    }
+    const continueTimer = () => {startTimer()}
     const resetTimer = () => {
-        clearInterval(timerIdRef.current);
-        timerIdRef.current = null;
-        hourRef.current.value = "";
-        minutesRef.current.value = "";
-        secondsRef.current.value = "";
-    };
+        hourRef.current.value="0";
+        minutesRef.current.value = "0";
+        secondsRef.current.value = "0";
+        pauseTimer()
+        }
 
     return (
         <div className="flex flex-col gap-8 justify-center items-center">
@@ -75,7 +66,7 @@ export default function CountdownTimer() {
             <div className="flex gap-4">
                 <button className="bg-black text-white px-4 py-2 rounded" onClick={startTimer}>Start</button>
                 <button className="bg-black text-white px-4 py-2 rounded" onClick={pauseTimer}>Pause</button>
-                <button className="bg-black text-white px-4 py-2 rounded" onClick={startTimer}>Continue</button>
+                <button className="bg-black text-white px-4 py-2 rounded" onClick={continueTimer}>Continue</button>
                 <button className="bg-black text-white px-4 py-2 rounded" onClick={resetTimer}>Reset</button>
             </div>
         </div>
